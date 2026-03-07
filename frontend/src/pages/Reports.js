@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Grid, Button } from '@mui/material';
 import toast from 'react-hot-toast';
-import { benchmarkService } from '../services/benchmark';
+import { useBenchmarks } from '../context/BenchmarkContext';
 
 const Reports = () => {
   const [benchmarks, setBenchmarks] = useState([]);
+  const { benchmarks: globalBenchmarks, fetchBenchmarks } = useBenchmarks();
 
   useEffect(() => {
-    fetchBenchmarks();
-  }, []);
-
-  const fetchBenchmarks = async () => {
-    try {
-      const response = await benchmarkService.getBenchmarks();
-      setBenchmarks(response.data || []);
-    } catch (error) {
-      toast.error(typeof error === 'string' ? error : 'Failed to load benchmarks');
+    if (globalBenchmarks.length > 0) {
+      setBenchmarks(globalBenchmarks);
+      return;
     }
-  };
+
+    fetchBenchmarks()
+      .then((data) => setBenchmarks(data))
+      .catch((error) => {
+        toast.error(error?.message || 'Failed to load benchmarks');
+      });
+  }, [globalBenchmarks, fetchBenchmarks]);
 
   const groupByQuarter = () => {
     const groups = {};

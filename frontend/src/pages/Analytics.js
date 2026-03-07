@@ -11,23 +11,24 @@ import {
   Legend,
 } from 'recharts';
 import toast from 'react-hot-toast';
-import { benchmarkService } from '../services/benchmark';
+import { useBenchmarks } from '../context/BenchmarkContext';
 
 const Analytics = () => {
   const [benchmarks, setBenchmarks] = useState([]);
+  const { benchmarks: globalBenchmarks, fetchBenchmarks } = useBenchmarks();
 
   useEffect(() => {
-    fetchBenchmarks();
-  }, []);
-
-  const fetchBenchmarks = async () => {
-    try {
-      const response = await benchmarkService.getBenchmarks();
-      setBenchmarks(response.data || []);
-    } catch (error) {
-      toast.error(typeof error === 'string' ? error : 'Failed to load analytics data');
+    if (globalBenchmarks.length > 0) {
+      setBenchmarks(globalBenchmarks);
+      return;
     }
-  };
+
+    fetchBenchmarks()
+      .then((data) => setBenchmarks(data))
+      .catch((error) => {
+        toast.error(error?.message || 'Failed to load analytics data');
+      });
+  }, [globalBenchmarks, fetchBenchmarks]);
 
   const averages = useMemo(() => {
     if (benchmarks.length === 0) return null;

@@ -12,41 +12,45 @@ import {
   ListItem,
   ListItemText,
   Chip,
+  Stack,
 } from '@mui/material';
 import toast from 'react-hot-toast';
-import { benchmarkService } from '../services/benchmark';
+import { useBenchmarks } from '../context/BenchmarkContext';
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
+const defaultMetrics = {
+  websiteTraffic: '',
+  conversionRate: '',
+  socialMediaEngagement: '',
+  customerSatisfaction: '',
+  revenueGrowth: '',
+  operationalEfficiency: '',
+};
+
+const buildInitialForm = () => ({
+  industry: '',
+  quarter: 'Q1',
+  year: new Date().getFullYear(),
+  notes: '',
+  metrics: { ...defaultMetrics },
+});
+
 const Benchmark = () => {
-  const [benchmarks, setBenchmarks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    industry: '',
-    quarter: 'Q1',
-    year: new Date().getFullYear(),
-    notes: '',
-    metrics: {
-      websiteTraffic: '',
-      conversionRate: '',
-      socialMediaEngagement: '',
-      customerSatisfaction: '',
-      revenueGrowth: '',
-      operationalEfficiency: '',
-    },
-  });
+  const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState(buildInitialForm());
+  const { benchmarks, fetchBenchmarks, createBenchmark, updateBenchmark, deleteBenchmark } = useBenchmarks();
 
   useEffect(() => {
-    fetchBenchmarks();
-  }, []);
-
-  const fetchBenchmarks = async () => {
-    try {
-      const response = await benchmarkService.getBenchmarks();
-      setBenchmarks(response.data || []);
-    } catch (error) {
+    fetchBenchmarks().catch(() => {
       toast.error('Failed to load benchmarks');
-    }
+    });
+  }, [fetchBenchmarks]);
+
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData(buildInitialForm());
   };
 
   const handleChange = (e) => {
@@ -71,7 +75,7 @@ const Benchmark = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     try {
       const payload = {
         ...formData,
@@ -83,26 +87,39 @@ const Benchmark = () => {
           ])
         ),
       };
-      await benchmarkService.createBenchmark(payload);
-      toast.success('Benchmark created');
-      setFormData((prev) => ({
-        ...prev,
-        notes: '',
-        metrics: {
-          websiteTraffic: '',
-          conversionRate: '',
-          socialMediaEngagement: '',
-          customerSatisfaction: '',
-          revenueGrowth: '',
-          operationalEfficiency: '',
-        },
-      }));
-      fetchBenchmarks();
-    } catch (error) {
-      toast.error(error || 'Failed to create benchmark');
+
+      if (editingId) {
+        await updateBenchmark(editingId, payload);
+      } else {
+        await createBenchmark(payload);
+      }
+
+      resetForm();
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item.id);
+    setFormData({
+      industry: item.industry,
+      quarter: item.quarter,
+      year: item.year,
+      notes: item.notes || '',
+      metrics: {
+        websiteTraffic: item.metrics.websiteTraffic,
+        conversionRate: item.metrics.conversionRate,
+        socialMediaEngagement: item.metrics.socialMediaEngagement,
+        customerSatisfaction: item.metrics.customerSatisfaction,
+        revenueGrowth: item.metrics.revenueGrowth,
+        operationalEfficiency: item.metrics.operationalEfficiency,
+      },
+    });
+  };
+
+  const handleDelete = async (id) => {
+    await deleteBenchmark(id);
   };
 
   return (
@@ -116,7 +133,7 @@ const Benchmark = () => {
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
-          New Benchmark
+          {editingId ? 'Edit Benchmark' : 'New Benchmark'}
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -247,10 +264,15 @@ const Benchmark = () => {
               type="submit"
               variant="contained"
               size="large"
-              disabled={loading}
+              disabled={submitting}
             >
-              {loading ? 'Saving...' : 'Save Benchmark'}
+              {submitting ? 'Saving...' : editingId ? 'Update Benchmark' : 'Save Benchmark'}
             </Button>
+            {editingId && (
+              <Button variant="outlined" size="large" onClick={resetForm} sx={{ ml: 1 }}>
+                Cancel
+              </Button>
+            )}
           </Box>
         </form>
       </Paper>
@@ -269,16 +291,26 @@ const Benchmark = () => {
             {benchmarks.slice(0, 10).map((item) => (
               <ListItem key={item.id} alignItems="flex-start">
                 <ListItemText
-                  primary={`${item.industry} • ${item.quarter} ${item.year}`}
+                  primary={`${item.industry} - ${item.quarter} ${item.year}`}
                   secondary={
-                    <Box display="flex" gap={1} flexWrap="wrap" mt={1}>
-                      <Chip size="small" label={`Traffic: ${item.metrics.websiteTraffic}`} />
-                      <Chip size="small" label={`Conversion: ${item.metrics.conversionRate}`} />
-                      <Chip size="small" label={`Engagement: ${item.metrics.socialMediaEngagement}`} />
-                      <Chip size="small" label={`Satisfaction: ${item.metrics.customerSatisfaction}`} />
-                      <Chip size="small" label={`Revenue: ${item.metrics.revenueGrowth}`} />
-                      <Chip size="small" label={`Efficiency: ${item.metrics.operationalEfficiency}`} />
-                    </Box>
+                    <Stack spacing={1} mt={1}>
+                      <Box display="flex" gap={1} flexWrap="wrap">
+                        <Chip size="small" label={`Traffic: ${item.metrics.websiteTraffic}`} />
+                        <Chip size="small" label={`Conversion: ${item.metrics.conversionRate}`} />
+                        <Chip size="small" label={`Engagement: ${item.metrics.socialMediaEngagement}`} />
+                        <Chip size="small" label={`Satisfaction: ${item.metrics.customerSatisfaction}`} />
+                        <Chip size="small" label={`Revenue: ${item.metrics.revenueGrowth}`} />
+                        <Chip size="small" label={`Efficiency: ${item.metrics.operationalEfficiency}`} />
+                      </Box>
+                      <Box>
+                        <Button size="small" onClick={() => handleEdit(item)}>
+                          Edit
+                        </Button>
+                        <Button size="small" color="error" onClick={() => handleDelete(item.id)}>
+                          Delete
+                        </Button>
+                      </Box>
+                    </Stack>
                   }
                 />
               </ListItem>

@@ -26,9 +26,8 @@ export const benchmarkService = {
     return response.data;
   },
 
-  getIndustryBenchmarks: async (industry, filters = {}) => {
-    const params = new URLSearchParams(filters);
-    const response = await api.get(`/benchmarks/industry/${industry}?${params}`);
+  getIndustryBenchmarks: async (industry, params = {}) => {
+    const response = await api.get(`/benchmarks/industry/${industry}`, { params });
     return response.data;
   },
 

@@ -1,6 +1,15 @@
 const User = require('../models/User');
 const { generateToken } = require('../utils/helpers');
 
+const formatUser = (user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  company: user.company,
+  industry: user.industry,
+  role: user.role,
+});
+
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -31,14 +40,7 @@ exports.register = async (req, res, next) => {
     res.status(201).json({
       success: true,
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        company: user.company,
-        industry: user.industry,
-        role: user.role,
-      },
+      user: formatUser(user),
     });
   } catch (error) {
     next(error);
@@ -75,14 +77,7 @@ exports.login = async (req, res, next) => {
     res.json({
       success: true,
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        company: user.company,
-        industry: user.industry,
-        role: user.role,
-      },
+      user: formatUser(user),
     });
   } catch (error) {
     next(error);
@@ -97,7 +92,42 @@ exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
     res.json({
       success: true,
-      user,
+      user: formatUser(user),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const allowedFields = ['name', 'company', 'industry'];
+    const updates = {};
+
+    allowedFields.forEach((field) => {
+      if (typeof req.body[field] !== 'undefined') {
+        updates[field] = req.body[field];
+      }
+    });
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No valid profile fields provided',
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json({
+      success: true,
+      user: formatUser(user),
     });
   } catch (error) {
     next(error);

@@ -1,96 +1,152 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Link,
-  Alert,
-} from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
+import { Box, TextField, Button, Typography, Paper, InputAdornment, IconButton } from '@mui/material';
+import { Email, Lock, Visibility, VisibilityOff, Dashboard } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, error } = useAuth();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const { mode } = useTheme();
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(email, password);
+    setLoading(true);
+    const result = await login(formData.email, formData.password);
+    setLoading(false);
     if (result.success) {
       navigate('/dashboard');
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        minHeight="100vh"
-        py={4}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: mode === 'light' ? '#F2F2F7' : '#000000',
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          maxWidth: 420,
+          width: '100%',
+          p: 4,
+        }}
       >
-        <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
-          <Typography variant="h4" align="center" gutterBottom>
+        <Box textAlign="center" mb={4}>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              p: 2,
+              borderRadius: '16px',
+              background: mode === 'light'
+                ? 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)'
+                : 'linear-gradient(135deg, #0A84FF 0%, #64D2FF 100%)',
+              mb: 2,
+            }}
+          >
+            <Dashboard sx={{ fontSize: 36, color: 'white' }} />
+          </Box>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
             Welcome Back
           </Typography>
-          <Typography variant="body1" color="textSecondary" align="center" mb={4}>
-            Sign in to your Digital Benchmarking account
+          <Typography variant="body2" color="text.secondary">
+            Sign in to continue
           </Typography>
+        </Box>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            name="email"
+            type="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            sx={{ mb: 2 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Email />
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              margin="normal"
-              required
-            />
-            <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              margin="normal"
-              required
-            />
-            <Button
-              fullWidth
-              type="submit"
-              variant="contained"
-              size="large"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-          </form>
+          <TextField
+            fullWidth
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            label="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            sx={{ mb: 3 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Lock />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          <Box textAlign="center" mt={2}>
-            <Typography variant="body2">
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            sx={{
+              py: 1.5,
+              fontSize: '1rem',
+              fontWeight: 600,
+              mb: 2,
+              textTransform: 'none',
+            }}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Button>
+
+          <Box textAlign="center">
+            <Typography variant="body2" color="text.secondary">
               Don't have an account?{' '}
-              <Link component={RouterLink} to="/register">
-                Sign up
+              <Link
+                to="/register"
+                style={{
+                  color: mode === 'light' ? '#007AFF' : '#0A84FF',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                Sign Up
               </Link>
             </Typography>
           </Box>
-        </Paper>
-      </Box>
-    </Container>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 

@@ -27,11 +27,21 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
-    return Promise.reject(error.response?.data?.error || 'Something went wrong');
+
+    const apiMessage =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.response?.data?.errors?.[0]?.msg;
+
+    const normalizedError = new Error(apiMessage || 'Something went wrong');
+    normalizedError.status = error.response?.status;
+    normalizedError.details = error.response?.data;
+
+    return Promise.reject(normalizedError);
   }
 );
 

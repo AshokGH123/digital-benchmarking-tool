@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import CssBaseline from '@mui/material/CssBaseline';
 import { useAuth } from './context/AuthContext';
 
 // Layout
@@ -33,48 +34,51 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="app">
-        {user && (
-          <Navbar
-            onMenuClick={handleToggleSidebar}
-            sidebarOpen={sidebarOpen}
-          />
-        )}
-        <div className="app-container">
+    <>
+      <CssBaseline />
+      <Router>
+        <div className="app">
           {user && (
-            <Sidebar
-              mobileOpen={sidebarOpen}
-              onClose={handleCloseSidebar}
+            <Navbar
+              onMenuClick={handleToggleSidebar}
+              sidebarOpen={sidebarOpen}
             />
           )}
-          <main className="main-content">
-            <Routes>
-              <Route 
-                path="/login" 
-                element={user ? <Navigate to="/dashboard" /> : <Login />} 
+          <div className="app-container">
+            {user && (
+              <Sidebar
+                mobileOpen={sidebarOpen}
+                onClose={handleCloseSidebar}
               />
-              <Route 
-                path="/register" 
-                element={user ? <Navigate to="/dashboard" /> : <Register />} 
-              />
-              
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/benchmark" element={<Benchmark />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/" element={<Navigate to="/dashboard" />} />
-              </Route>
-              
-              <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
-            </Routes>
-          </main>
+            )}
+            <main className="main-content">
+              <Routes>
+                <Route 
+                  path="/login" 
+                  element={user ? <Navigate to="/dashboard" /> : <Login />} 
+                />
+                <Route 
+                  path="/register" 
+                  element={user ? <Navigate to="/dashboard" /> : <Register />} 
+                />
+                
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/benchmark" element={<Benchmark />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/" element={<Navigate to="/dashboard" />} />
+                </Route>
+                
+                <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+              </Routes>
+            </main>
+          </div>
+          {user && <Footer />}
         </div>
-        {user && <Footer />}
-      </div>
-    </Router>
+      </Router>
+    </>
   );
 }
 

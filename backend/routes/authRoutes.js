@@ -1,12 +1,13 @@
 const express = require('express');
-const router = express.Router();
-const { register, login, getMe } = require('../controllers/authController');
+const { register, login, getMe, updateProfile } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
-const validate = require('../middleware/validation');
-const { registerValidator, loginValidator } = require('../utils/validators');
+const { registerValidation, loginValidation, profileValidation } = require('../middleware/validation');
 
-router.post('/register', registerValidator, validate, register);
-router.post('/login', loginValidator, validate, login);
+const router = express.Router();
+
+router.post('/register', registerValidation, register);
+router.post('/login', loginValidation, login);
 router.get('/me', protect, getMe);
+router.put('/profile', protect, profileValidation, updateProfile);
 
 module.exports = router;

@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const {
   createBenchmark,
   getBenchmarks,
@@ -9,20 +8,19 @@ const {
   getIndustryBenchmarks,
 } = require('../controllers/benchmarkController');
 const { protect } = require('../middleware/auth');
-const validate = require('../middleware/validation');
-const { benchmarkValidator } = require('../utils/validators');
+const { benchmarkValidation } = require('../middleware/validation');
 
-router.use(protect);
+const router = express.Router();
 
 router.route('/')
-  .post(benchmarkValidator, validate, createBenchmark)
-  .get(getBenchmarks);
-
-router.get('/industry/:industry', getIndustryBenchmarks);
+  .get(protect, getBenchmarks)
+  .post(protect, benchmarkValidation, createBenchmark);
 
 router.route('/:id')
-  .get(getBenchmark)
-  .put(benchmarkValidator, validate, updateBenchmark)
-  .delete(deleteBenchmark);
+  .get(protect, getBenchmark)
+  .put(protect, benchmarkValidation, updateBenchmark)
+  .delete(protect, deleteBenchmark);
+
+router.get('/industry/:industry', protect, getIndustryBenchmarks);
 
 module.exports = router;

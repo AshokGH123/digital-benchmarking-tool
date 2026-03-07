@@ -6,6 +6,12 @@ const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
 
+const getErrorMessage = (err, fallbackMessage) => {
+  if (!err) return fallbackMessage;
+  if (typeof err === 'string') return err;
+  return err.message || fallbackMessage;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,9 +41,10 @@ export const AuthProvider = ({ children }) => {
       toast.success('Login successful!');
       return { success: true };
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message || 'Login failed');
-      return { success: false, error: err.message };
+      const message = getErrorMessage(err, 'Login failed');
+      setError(message);
+      toast.error(message);
+      return { success: false, error: message };
     }
   };
 
@@ -50,9 +57,10 @@ export const AuthProvider = ({ children }) => {
       toast.success('Registration successful!');
       return { success: true };
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message || 'Registration failed');
-      return { success: false, error: err.message };
+      const message = getErrorMessage(err, 'Registration failed');
+      setError(message);
+      toast.error(message);
+      return { success: false, error: message };
     }
   };
 
