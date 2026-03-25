@@ -1,18 +1,43 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, IconButton, Badge } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, IconButton, Badge, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
-import { Dashboard as DashboardIcon, Menu as MenuIcon, MenuOpen as MenuOpenIcon, Notifications, DarkMode, LightMode } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Menu as MenuIcon, MenuOpen as MenuOpenIcon, Notifications, DarkMode, LightMode, SmartToy, CheckCircle, TrendingUp, Assessment } from '@mui/icons-material';
 
 const Navbar = ({ onMenuClick, sidebarOpen }) => {
   const { user, logout } = useAuth();
   const { mode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null);
   
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleNotificationClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setAnchorEl(null);
+  };
+
+  const notifications = [
+    { id: 1, text: 'New benchmark data available', icon: <Assessment />, action: '/benchmark' },
+    { id: 2, text: 'AI insights ready for review', icon: <SmartToy />, action: '/ai-insights' },
+    { id: 3, text: 'Process health alert: 2 critical', icon: <Notifications />, action: '/process-health' },
+  ];
+
+  const handleNotificationItemClick = (action) => {
+    navigate(action);
+    handleNotificationClose();
+  };
+
+  const viewAllNotifications = () => {
+    navigate('/notifications');
+    handleNotificationClose();
   };
 
   return (
@@ -76,11 +101,51 @@ const Navbar = ({ onMenuClick, sidebarOpen }) => {
           >
             {mode === 'light' ? <DarkMode /> : <LightMode />}
           </IconButton>
-          <IconButton color="inherit">
-            <Badge badgeContent={3} color="error">
+          <IconButton 
+            color="inherit"
+            onClick={() => navigate('/ai-insights')}
+            sx={{ 
+              '&:hover': { transform: 'scale(1.1)' },
+              transition: 'transform 0.2s',
+              background: mode === 'light'
+                ? 'linear-gradient(135deg, #007AFF15 0%, #5AC8FA15 100%)'
+                : 'linear-gradient(135deg, #0A84FF20 0%, #64D2FF20 100%)',
+            }}
+          >
+            <SmartToy />
+          </IconButton>
+          <IconButton color="inherit" onClick={handleNotificationClick}>
+            <Badge badgeContent={notifications.length} color="error">
               <Notifications />
             </Badge>
           </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleNotificationClose}
+            PaperProps={{
+              sx: {
+                width: 320,
+                maxHeight: 400,
+                mt: 1,
+              },
+            }}
+          >
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Notifications</Typography>
+            </Box>
+            <Divider />
+            {notifications.map((notif) => (
+              <MenuItem key={notif.id} onClick={() => handleNotificationItemClick(notif.action)}>
+                <ListItemIcon>{notif.icon}</ListItemIcon>
+                <ListItemText primary={notif.text} primaryTypographyProps={{ variant: 'body2' }} />
+              </MenuItem>
+            ))}
+            <Divider />
+            <MenuItem onClick={viewAllNotifications}>
+              <ListItemText primary="View All Notifications" primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }} />
+            </MenuItem>
+          </Menu>
           <Box display="flex" alignItems="center" gap={1.5}>
             <Avatar 
               sx={{ 

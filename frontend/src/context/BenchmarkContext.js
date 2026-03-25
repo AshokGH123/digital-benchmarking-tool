@@ -1,108 +1,76 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 import { benchmarkService } from '../services/benchmark';
+import toast from 'react-hot-toast';
 
-const BenchmarkContext = createContext({});
+const BenchmarkContext = createContext();
 
-const normalizeErrorMessage = (error, fallbackMessage) => {
-  if (!error) return fallbackMessage;
-  if (typeof error === 'string') return error;
-  if (error.message) return error.message;
-  return fallbackMessage;
-};
+export const useBenchmarks = () => useContext(BenchmarkContext);
 
 export const BenchmarkProvider = ({ children }) => {
   const [benchmarks, setBenchmarks] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const handleStorage = (event) => {
-      if (event.key === 'token' && !event.newValue) {
-        setBenchmarks([]);
-        setError(null);
-        setLoading(false);
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
 
   const fetchBenchmarks = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
       const response = await benchmarkService.getBenchmarks();
       setBenchmarks(response.data || []);
       return response.data || [];
-    } catch (err) {
-      const message = normalizeErrorMessage(err, 'Failed to load benchmarks');
-      setError(message);
-      throw new Error(message);
+    } catch (error) {
+      toast.error(error.message || 'Failed to fetch benchmarks');
+      return [];
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const createBenchmark = useCallback(async (payload) => {
+  const createBenchmark = async (data) => {
     try {
-      setError(null);
-      const response = await benchmarkService.createBenchmark(payload);
-      setBenchmarks((prev) => [response.data, ...prev]);
-      toast.success('Benchmark created');
+      const response = await benchmarkService.createBenchmark(data);
+      setBenchmarks(prev => [response.data, ...prev]);
+      toast.success('Benchmark created successfully');
       return response.data;
-    } catch (err) {
-      const message = normalizeErrorMessage(err, 'Failed to create benchmark');
-      setError(message);
-      toast.error(message);
-      throw new Error(message);
+    } catch (error) {
+      toast.error(error.message || 'Failed to create benchmark');
+      throw error;
     }
-  }, []);
+  };
 
-  const updateBenchmark = useCallback(async (id, payload) => {
+  const updateBenchmark = async (id, data) => {
     try {
-      setError(null);
-      const response = await benchmarkService.updateBenchmark(id, payload);
-      setBenchmarks((prev) => prev.map((item) => (item.id === id ? response.data : item)));
-      toast.success('Benchmark updated');
+      const response = await benchmarkService.updateBenchmark(id, data);
+      setBenchmarks(prev => prev.map(b => b.id === id ? response.data : b));
+      toast.success('Benchmark updated successfully');
       return response.data;
-    } catch (err) {
-      const message = normalizeErrorMessage(err, 'Failed to update benchmark');
-      setError(message);
-      toast.error(message);
-      throw new Error(message);
+    } catch (error) {
+      toast.error(error.message || 'Failed to update benchmark');
+      throw error;
     }
-  }, []);
+  };
 
-  const deleteBenchmark = useCallback(async (id) => {
+  const deleteBenchmark = async (id) => {
     try {
-      setError(null);
       await benchmarkService.deleteBenchmark(id);
-      setBenchmarks((prev) => prev.filter((item) => item.id !== id));
-      toast.success('Benchmark deleted');
-    } catch (err) {
-      const message = normalizeErrorMessage(err, 'Failed to delete benchmark');
-      setError(message);
-      toast.error(message);
-      throw new Error(message);
+      setBenchmarks(prev => prev.filter(b => b.id !== id));
+      toast.success('Benchmark deleted successfully');
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete benchmark');
+      throw error;
     }
-  }, []);
+  };
 
-  const value = useMemo(
-    () => ({
-      benchmarks,
-      loading,
-      error,
-      fetchBenchmarks,
-      createBenchmark,
-      updateBenchmark,
-      deleteBenchmark,
-    }),
-    [benchmarks, loading, error, fetchBenchmarks, createBenchmark, updateBenchmark, deleteBenchmark]
+  const value = {
+    benchmarks,
+    loading,
+    fetchBenchmarks,
+    createBenchmark,
+    updateBenchmark,
+    deleteBenchmark,
+  };
+
+  return (
+    <BenchmarkContext.Provider value={value}>
+      {children}
+    </BenchmarkContext.Provider>
   );
-
-  return <BenchmarkContext.Provider value={value}>{children}</BenchmarkContext.Provider>;
 };
-
-export const useBenchmarks = () => useContext(BenchmarkContext);

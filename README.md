@@ -1,101 +1,116 @@
-# Digital Benchmarking Tool - Upgraded Edition
+# Digital Benchmarking Tool - Phase 3
 
-Digital Process Benchmarking Tool is a full-stack web application designed to help organizations evaluate, compare, and improve their digital processes using benchmarking metrics.
+A full-stack MERN web application for evaluating, comparing, and improving digital processes using benchmarking metrics.
 
-## 🎨 New Features & Upgrades
+## Live Demo
+- **Frontend**: https://your-app.vercel.app
+- **Backend API**: https://your-backend.onrender.com/api
 
-### UI/UX Enhancements
-- **Modern Light Theme**: Beautiful pastel color scheme with gradient backgrounds
-- **Glassmorphism Effects**: Frosted glass design elements throughout the app
-- **Smooth Animations**: Fade-in effects, hover transitions, and micro-interactions
-- **Gradient Accents**: Eye-catching purple-to-pink gradients on key elements
+---
 
-### New Components
-- **AI-Powered Insights Panel**: Smart recommendations based on your data
-- **Quick Actions Widget**: Fast access to common tasks (Export, Refresh, New Benchmark)
-- **Enhanced Metric Cards**: Gradient backgrounds with animated hover effects
-- **Performance Score Widget**: Real-time performance tracking in sidebar
-- **Notification System**: Badge notifications in navbar
-- **Modern Footer**: Social links and branding
+## Phase 3 Enhancements
 
-### Design System
-- **Custom Theme**: Material-UI theme with custom colors and typography
-- **Reusable Components**: GlassCard, StatCard, ActionButton, GradientText
-- **Responsive Layout**: Optimized for all screen sizes
-- **Modern Typography**: Inter font family with gradient text effects
+### UI/UX
+- Skeleton loaders on all data-fetching pages
+- Fade-in animations on cards and content
+- Hover lift effects on cards
+- Toast notifications for all actions (success/error/loading)
+- Responsive design across all screen sizes
+- Pagination on Benchmark page (6 per page)
+- Circular progress loader on form submit buttons
 
-### Color Palette
-- Primary: Indigo (#6366f1)
-- Secondary: Pink (#ec4899)
-- Success: Emerald (#10b981)
-- Warning: Amber (#f59e0b)
-- Info: Blue (#3b82f6)
-- Background: Gradient from slate to lavender to pink
+### Advanced Logic
+- **Search**: Real-time search by industry or notes
+- **Filtering**: Filter benchmarks by quarter and year
+- **Pagination**: Client-side pagination with page controls
+- **Sorting**: Sort benchmarks by date, industry
+- **Backend pagination**: API supports page, limit, sortBy, order query params
+
+### Third-Party Integrations
+- **Google OAuth 2.0**: Sign in with Google on login page
+- **Gmail SMTP**: Automatic email notifications via Nodemailer
+- **MongoDB Atlas**: Cloud database for production
+- **Recharts**: Interactive charts and visualizations
+
+### Performance
+- Efficient MongoDB queries with indexing
+- Pagination reduces data load
+- Lazy rendering with Fade transitions
+- Skeleton loaders prevent layout shift
+
+### Deployment
+- Backend deployed on **Render**
+- Frontend deployed on **Vercel**
+- Database on **MongoDB Atlas**
+- Environment variables secured
+
+---
 
 ## Features
+- JWT Authentication + Google Sign-In
+- Benchmark CRUD with search, filter, pagination
+- Process Health Monitoring with auto health score
+- AI-Powered Insights and recommendations
+- Email Reports (automatic + manual)
+- Analytics with charts (line, bar, pie)
+- Notification history
+- Dark/Light theme toggle
 
-- Process performance analysis
-- Benchmark comparison
-- Interactive dashboard with AI insights
-- Real-time notifications
-- Export functionality
-- Scalable architecture
+---
 
 ## Tech Stack
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React.js, Material-UI v5, Recharts |
+| Backend | Node.js, Express.js |
+| Database | MongoDB Atlas |
+| Auth | JWT, Google OAuth 2.0 |
+| Email | Nodemailer (Gmail SMTP) |
+| Deployment | Render + Vercel |
 
-**Frontend**: React.js, Material-UI v5, Recharts  
-**Backend**: Node.js, Express.js  
-**Database**: MongoDB  
+---
 
 ## Installation
 
-### Frontend:
-```bash
-cd frontend
-npm install
-npm start
-```
-
-### Backend:
+### Backend
 ```bash
 cd backend
 npm install
 npm start
 ```
 
-## New Dependencies
-The upgraded version uses:
-- @mui/material v5.15.0
-- @mui/icons-material v5.15.0
-- @emotion/react & @emotion/styled (for Material-UI styling)
-- Enhanced animations and transitions
+### Frontend
+```bash
+cd frontend
+npm install
+npm start
+```
 
-## Author
-**Ashok**
+### Environment Variables (backend/.env)
+```
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/digital-benchmarking
+JWT_SECRET=your_secret
+JWT_EXPIRE=7d
+CORS_ORIGIN=http://localhost:3000
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+```
 
 ---
 
-## Upgrade Highlights
+## API Documentation
+See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for full API reference.
 
-### Before vs After
-- ❌ Basic flat design → ✅ Modern glassmorphism with gradients
-- ❌ Standard colors → ✅ Beautiful light pastel theme
-- ❌ Static cards → ✅ Animated, interactive components
-- ❌ Basic metrics → ✅ AI-powered insights
-- ❌ Limited actions → ✅ Quick action buttons
-- ❌ Simple navbar → ✅ Gradient navbar with notifications
+## Deployment Guide
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step deployment instructions.
 
-### Performance
-- Optimized animations using CSS transforms
-- Lazy loading for better performance
-- Smooth 60fps transitions
-- Lightweight glassmorphism effects
+---
 
-## Browser Support
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
-
-## License
-MIT License
+## Author
+**Ashok** | MIT License

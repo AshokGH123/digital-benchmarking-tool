@@ -35,4 +35,9 @@ export const benchmarkService = {
     const response = await api.get('/dashboard');
     return response.data;
   },
+
+  sendReport: async () => {
+    const response = await api.post('/benchmarks/send-report');
+    return response.data;
+  },
 };

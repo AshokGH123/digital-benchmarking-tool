@@ -6,6 +6,7 @@ const {
   updateBenchmark,
   deleteBenchmark,
   getIndustryBenchmarks,
+  sendAllBenchmarksReport,
 } = require('../controllers/benchmarkController');
 const { protect } = require('../middleware/auth');
 const { benchmarkValidation } = require('../middleware/validation');
@@ -15,6 +16,8 @@ const router = express.Router();
 router.route('/')
   .get(protect, getBenchmarks)
   .post(protect, benchmarkValidation, createBenchmark);
+
+router.post('/send-report', protect, sendAllBenchmarksReport);
 
 router.route('/:id')
   .get(protect, getBenchmark)

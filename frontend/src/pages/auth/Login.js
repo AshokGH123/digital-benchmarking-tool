@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Box, TextField, Button, Typography, Paper, InputAdornment, IconButton } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper, InputAdornment, IconButton, Divider } from '@mui/material';
 import { Email, Lock, Visibility, VisibilityOff, Dashboard } from '@mui/icons-material';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -9,7 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const { mode } = useTheme();
   const navigate = useNavigate();
 
@@ -128,6 +129,20 @@ const Login = () => {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
+
+          <Divider sx={{ my: 2 }}>OR</Divider>
+
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                setLoading(true);
+                const result = await googleLogin(credentialResponse.credential);
+                setLoading(false);
+                if (result.success) navigate('/dashboard');
+              }}
+              onError={() => alert('Google Sign-In failed')}
+            />
+          </Box>
 
           <Box textAlign="center">
             <Typography variant="body2" color="text.secondary">

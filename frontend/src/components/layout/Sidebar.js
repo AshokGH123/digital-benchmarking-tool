@@ -12,6 +12,8 @@ import {
 import {
   Dashboard as DashboardIcon,
   Assessment as BenchmarkIcon,
+  MonitorHeart as HealthIcon,
+  AutoAwesome as AIIcon,
   Analytics as AnalyticsIcon,
   Description as ReportsIcon,
   Settings as SettingsIcon,
@@ -25,6 +27,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Benchmark', icon: <BenchmarkIcon />, path: '/benchmark' },
+  { text: 'Process Health', icon: <HealthIcon />, path: '/process-health' },
+  { text: 'AI Insights', icon: <AIIcon />, path: '/ai-insights' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },

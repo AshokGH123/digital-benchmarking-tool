@@ -17,6 +17,8 @@ connectDB();
 const authRoutes = require('./routes/authRoutes');
 const benchmarkRoutes = require('./routes/benchmarkRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const processRoutes = require('./routes/processRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 
 const app = express();
 
@@ -45,6 +47,8 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api/auth', authRoutes);
 app.use('/api/benchmarks', benchmarkRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/processes', processRoutes);
+app.use('/api/notifications', emailRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -60,7 +64,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
 

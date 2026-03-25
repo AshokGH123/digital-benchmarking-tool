@@ -6,12 +6,6 @@ const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
 
-const getErrorMessage = (err, fallbackMessage) => {
-  if (!err) return fallbackMessage;
-  if (typeof err === 'string') return err;
-  return err.message || fallbackMessage;
-};
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,13 +29,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
+      console.log('Attempting login...');
       const data = await authService.login(email, password);
+      console.log('Login response:', data);
       setUser(data.user);
       localStorage.setItem('token', data.token);
       toast.success('Login successful!');
       return { success: true };
     } catch (err) {
-      const message = getErrorMessage(err, 'Login failed');
+      console.error('Login error:', err);
+      const message = err.message || 'Login failed';
       setError(message);
       toast.error(message);
       return { success: false, error: message };
@@ -51,13 +48,32 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError(null);
+      console.log('Attempting registration...', userData);
       const data = await authService.register(userData);
+      console.log('Registration response:', data);
       setUser(data.user);
       localStorage.setItem('token', data.token);
       toast.success('Registration successful!');
       return { success: true };
     } catch (err) {
-      const message = getErrorMessage(err, 'Registration failed');
+      console.error('Registration error:', err);
+      const message = err.message || 'Registration failed';
+      setError(message);
+      toast.error(message);
+      return { success: false, error: message };
+    }
+  };
+
+  const googleLogin = async (credential) => {
+    try {
+      setError(null);
+      const data = await authService.googleLogin(credential);
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      toast.success('Google Sign-In successful!');
+      return { success: true };
+    } catch (err) {
+      const message = err.message || 'Google Sign-In failed';
       setError(message);
       toast.error(message);
       return { success: false, error: message };
@@ -80,6 +96,7 @@ export const AuthProvider = ({ children }) => {
     error,
     login,
     register,
+    googleLogin,
     logout,
     updateUser,
     isAuthenticated: !!user,

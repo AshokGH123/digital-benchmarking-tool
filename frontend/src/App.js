@@ -18,6 +18,10 @@ import Reports from './pages/Reports';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 
+import AIInsights from './pages/AIInsights';
+import ProcessHealth from './pages/ProcessHealth';
+import Notifications from './pages/Notifications';
+
 // Styles
 import './App.css';
 
@@ -65,8 +69,11 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/benchmark" element={<Benchmark />} />
-                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/process-health" element={<ProcessHealth />} />
+                  <Route path="/ai-insights" element={<AIInsights />} />
                   <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/notifications" element={<Notifications />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Route>

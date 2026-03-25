@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const { generateToken } = require('../utils/helpers');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const formatUser = (user) => ({
   id: user._id,
@@ -10,14 +12,10 @@ const formatUser = (user) => ({
   role: user.role,
 });
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password, company, industry } = req.body;
 
-    // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -26,7 +24,6 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -47,14 +44,10 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Check for user
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -63,7 +56,6 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Check password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -84,9 +76,39 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    
+    let user = await User.findOne({ email: payload.email });
+    
+    if (!user) {
+      user = await User.create({
+        name: payload.name,
+        email: payload.email,
+        password: Math.random().toString(36).slice(-8),
+        company: 'N/A',
+        industry: 'Technology',
+      });
+    }
+    
+    const token = generateToken(user);
+    
+    res.json({
+      success: true,
+      token,
+      user: formatUser(user),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
@@ -99,9 +121,6 @@ exports.getMe = async (req, res, next) => {
   }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
 exports.updateProfile = async (req, res, next) => {
   try {
     const allowedFields = ['name', 'company', 'industry'];
