@@ -7,7 +7,9 @@ export const authService = {
   },
 
   googleLogin: async (credential) => {
-    const response = await api.post('/auth/google', { credential });
+    const response = await api.post('/auth/google', {
+      token: credential   // ✅ FIXED HERE
+    });
     return response.data;
   },
 
