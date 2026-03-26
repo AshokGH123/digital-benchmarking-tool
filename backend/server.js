@@ -50,6 +50,10 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/processes', processRoutes);
 app.use('/api/notifications', emailRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Backend is running 🚀');
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
