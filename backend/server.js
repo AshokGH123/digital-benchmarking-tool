@@ -28,8 +28,6 @@ app.use(express.json());
 // CORS
 const cors = require('cors');
 
-const cors = require('cors');
-
 app.use(cors({
   origin: true,  // allow all origins (fix for now)
   credentials: true,
