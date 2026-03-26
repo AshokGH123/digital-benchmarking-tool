@@ -29,13 +29,16 @@ app.use(express.json());
 const cors = require('cors');
 
 app.use(cors({
-  origin: true,  // allow all origins (fix for now)
-  credentials: true,
+  origin: [
+    "https://digital-benchmarking-tool.vercel.app",
+    "https://digital-benchmarking-tool-7oseyqzi4-ashokgh123s-projects.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
 
-// VERY IMPORTANT → handle preflight manually
+// ✅ HANDLE PREFLIGHT REQUESTS (VERY IMPORTANT)
 app.options('*', cors());
 
 // Security headers
