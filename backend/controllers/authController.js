@@ -1,9 +1,10 @@
-exports.googleLogin = async (req, res, next) => {
+exports.googleLogin = async (req, res) => {
   try {
     console.log("Google login body:", req.body);
 
-    const { token } = req.body;   // ✅ FIXED HERE
+    const { token } = req.body;
 
+    // 🔒 Validate token
     if (!token) {
       return res.status(400).json({
         success: false,
@@ -11,18 +12,28 @@ exports.googleLogin = async (req, res, next) => {
       });
     }
 
+    // 🔐 Verify Google token
     const ticket = await client.verifyIdToken({
-      idToken: token,   // ✅ FIXED HERE
+      idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
 
+    if (!payload || !payload.email) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid Google token",
+      });
+    }
+
+    // 🔍 Check user
     let user = await User.findOne({ email: payload.email });
 
+    // 🆕 Create user if not exists
     if (!user) {
       user = await User.create({
-        name: payload.name,
+        name: payload.name || "Google User",
         email: payload.email,
         password: Math.random().toString(36).slice(-8),
         company: 'N/A',
@@ -30,9 +41,11 @@ exports.googleLogin = async (req, res, next) => {
       });
     }
 
+    // 🔑 Generate JWT
     const jwtToken = generateToken(user);
 
-    res.json({
+    // ✅ Send response
+    return res.status(200).json({
       success: true,
       token: jwtToken,
       user: formatUser(user),
@@ -40,9 +53,10 @@ exports.googleLogin = async (req, res, next) => {
 
   } catch (error) {
     console.error("Google login error:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
-      error: error.message,
+      error: "Google authentication failed",
     });
   }
 };
