@@ -28,14 +28,17 @@ app.use(express.json());
 // CORS
 const cors = require('cors');
 
+const cors = require('cors');
+
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://digital-benchmarking-tool.vercel.app",
-    "https://digital-benchmarking-tool-7oseyqzi4-ashokgh123s-projects.vercel.app"
-  ],
-  credentials: true
+  origin: true,  // allow all origins (fix for now)
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// VERY IMPORTANT → handle preflight manually
+app.options('*', cors());
 
 // Security headers
 app.use(helmet());
