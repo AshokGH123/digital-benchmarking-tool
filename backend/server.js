@@ -31,7 +31,8 @@ const cors = require('cors');
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://digital-benchmarking-tool.vercel.app"
+    "https://digital-benchmarking-tool.vercel.app",
+    "https://digital-benchmarking-tool-7oseyqzi4-ashokgh123s-projects.vercel.app"
   ],
   credentials: true
 }));
