@@ -5,7 +5,6 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
-const cors = require('./config/cors');
 const errorHandler = require('./middleware/errorHandler');
 
 // Load env vars
@@ -30,7 +29,10 @@ app.use(express.json());
 const cors = require('cors');
 
 app.use(cors({
-  origin: "https://digital-benchmarking-tool.vercel.app",
+  origin: [
+    "http://localhost:3000",
+    "https://digital-benchmarking-tool.vercel.app"
+  ],
   credentials: true
 }));
 
