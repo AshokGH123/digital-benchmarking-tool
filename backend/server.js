@@ -27,7 +27,12 @@ const app = express();
 app.use(express.json());
 
 // CORS
-app.use(cors);
+const cors = require('cors');
+
+app.use(cors({
+  origin: "https://digital-benchmarking-tool.vercel.app",
+  credentials: true
+}));
 
 // Security headers
 app.use(helmet());
