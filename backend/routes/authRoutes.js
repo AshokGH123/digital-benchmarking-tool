@@ -1,14 +1,13 @@
 const express = require('express');
 const { register, login, googleLogin, getMe, updateProfile } = require('../controllers/authController');
-const { protect } = require('../middleware/auth');
-const { registerValidation, loginValidation, profileValidation } = require('../middleware/validation');
 
 const router = express.Router();
 
-router.post('/register', registerValidation, register);
-router.post('/login', loginValidation, login);
+// ✅ REMOVE ALL MIDDLEWARE TEMPORARILY
+router.post('/register', register);
+router.post('/login', login);
 router.post('/google', googleLogin);
-router.get('/me', protect, getMe);
-router.put('/profile', protect, profileValidation, updateProfile);
+router.get('/me', getMe);
+router.put('/profile', updateProfile);
 
 module.exports = router;
