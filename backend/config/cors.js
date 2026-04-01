@@ -1,5 +1,3 @@
-const cors = require('cors');
-
 const defaultOrigins = ['http://localhost:3000'];
 
 const configuredOrigins = process.env.CORS_ORIGIN
@@ -19,22 +17,20 @@ const isAllowedOrigin = (origin) => {
   }
 };
 
-const corsOptions = {
-  origin(origin, callback) {
-    if (!origin) {
-      return callback(null, true);
-    }
+module.exports = (req, res, next) => {
+  const origin = req.headers.origin;
 
-    if (isAllowedOrigin(origin)) {
-      return callback(null, origin);
-    }
+  if (origin && isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
 
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200,
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  return next();
 };
-
-module.exports = cors(corsOptions);
