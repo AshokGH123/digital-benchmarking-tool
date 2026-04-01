@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid, Paper, Typography, Box, Card, CardContent, LinearProgress,
-  Chip, IconButton, Tooltip, Skeleton, Fade, useTheme as useMuiTheme,
+  Grid, Paper, Typography, Box, Card, CardContent,
+  Chip, IconButton, Tooltip, Skeleton, Fade,
 } from '@mui/material';
 import {
-  TrendingUp, TrendingDown, People, AttachMoney, Speed, ThumbUp,
+  TrendingUp, People, AttachMoney, Speed, ThumbUp,
   FileDownload, Refresh, Lightbulb, AutoAwesome, Rocket, Timeline,
 } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';

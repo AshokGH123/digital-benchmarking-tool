@@ -15,7 +15,6 @@ import {
   Chip,
   IconButton,
   Alert,
-  LinearProgress,
   Table,
   TableBody,
   TableCell,

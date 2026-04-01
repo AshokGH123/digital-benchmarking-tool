@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Paper, Grid, TextField, MenuItem, Button, Card, CardContent,
   IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Chip, Stack,
   InputAdornment, Skeleton, Pagination, Fade, Tooltip, CircularProgress,
 } from '@mui/material';
-import { Add, Edit, Delete, Assessment, Search, FilterList, Clear } from '@mui/icons-material';
+import { Add, Edit, Delete, Assessment, Search, Clear } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
 import { useBenchmarks } from '../context/BenchmarkContext';
 import { useAuth } from '../context/AuthContext';

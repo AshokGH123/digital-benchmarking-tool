@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Box, Avatar, IconButton, Badge, Me
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
-import { Dashboard as DashboardIcon, Menu as MenuIcon, MenuOpen as MenuOpenIcon, Notifications, DarkMode, LightMode, SmartToy, CheckCircle, TrendingUp, Assessment } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Menu as MenuIcon, MenuOpen as MenuOpenIcon, Notifications, DarkMode, LightMode, SmartToy, Assessment } from '@mui/icons-material';
 
 const Navbar = ({ onMenuClick, sidebarOpen }) => {
   const { user, logout } = useAuth();

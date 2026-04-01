@@ -7,14 +7,11 @@ import {
   TextField,
   Button,
   Avatar,
-  Divider,
   Switch,
   FormControlLabel,
   MenuItem,
-  Card,
-  CardContent,
 } from '@mui/material';
-import { Person, Business, Category, Palette, Notifications, Security } from '@mui/icons-material';
+import { Person, Palette, Notifications, Security } from '@mui/icons-material';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth';
