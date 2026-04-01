@@ -8,10 +8,12 @@ import { BenchmarkProvider } from './context/BenchmarkContext';
 import { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId="325341624572-59tcs9tfkhsnd221lph1mqba7uiedpg3.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={googleClientId || ''}>
       <ThemeProvider>
         <AuthProvider>
           <BenchmarkProvider>
