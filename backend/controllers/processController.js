@@ -6,7 +6,7 @@ exports.createProcess = async (req, res, next) => {
   try {
     const { processName, benchmarkTime, benchmarkCost, actualTime, actualCost, errorRate } = req.body;
 
-    const process = await Process.create({
+    const processRecord = await Process.create({
       user: req.user.id,
       processName,
       benchmarkTime,
@@ -18,12 +18,12 @@ exports.createProcess = async (req, res, next) => {
 
     const user = await User.findById(req.user.id);
     
-    if (user.email && process.env.SMTP_USER) {
+    if (user.email && globalThis.process.env.SMTP_USER) {
       try {
-        await sendBenchmarkReport(process, user);
+        await sendBenchmarkReport(processRecord, user);
         
-        if (process.healthScore < 60) {
-          await sendPerformanceAlert(process, user);
+        if (processRecord.healthScore < 60) {
+          await sendPerformanceAlert(processRecord, user);
         }
       } catch (emailError) {
         console.error('Email sending failed:', emailError);
@@ -32,7 +32,7 @@ exports.createProcess = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: process,
+      data: processRecord,
     });
   } catch (error) {
     next(error);
