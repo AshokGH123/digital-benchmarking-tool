@@ -69,7 +69,7 @@ exports.sendWeeklyReport = async (req, res, next) => {
     `;
 
     const nodemailer = require('nodemailer');
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: process.env.SMTP_PORT || 587,
       secure: false,
@@ -124,7 +124,7 @@ exports.resendNotification = async (req, res, next) => {
     }
 
     const nodemailer = require('nodemailer');
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: process.env.SMTP_PORT || 587,
       secure: false,
