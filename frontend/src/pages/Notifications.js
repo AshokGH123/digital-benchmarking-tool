@@ -3,20 +3,16 @@ import {
   Box,
   Typography,
   Paper,
-  Button,
   Card,
   CardContent,
   Chip,
   Grid,
-  IconButton,
-  Tooltip,
+  Alert,
 } from '@mui/material';
 import {
   Email,
-  Send,
   CheckCircle,
   Error as ErrorIcon,
-  Refresh,
   Schedule,
 } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
@@ -26,7 +22,6 @@ import toast from 'react-hot-toast';
 const Notifications = () => {
   const { mode } = useTheme();
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchNotifications();
@@ -38,29 +33,6 @@ const Notifications = () => {
       setNotifications(response.data.data || []);
     } catch (error) {
       toast.error('Failed to load notifications');
-    }
-  };
-
-  const sendWeeklyReport = async () => {
-    setLoading(true);
-    try {
-      await api.post('/notifications/weekly-report');
-      toast.success('Weekly report sent successfully!');
-      fetchNotifications();
-    } catch (error) {
-      toast.error(error.message || 'Failed to send report');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resendNotification = async (id) => {
-    try {
-      await api.post(`/notifications/resend/${id}`);
-      toast.success('Notification resent successfully!');
-      fetchNotifications();
-    } catch (error) {
-      toast.error('Failed to resend notification');
     }
   };
 
@@ -94,16 +66,11 @@ const Notifications = () => {
             View and manage your email notification history
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<Send />}
-          onClick={sendWeeklyReport}
-          disabled={loading}
-          sx={{ textTransform: 'none', fontWeight: 600 }}
-        >
-          {loading ? 'Sending...' : 'Send Weekly Report'}
-        </Button>
       </Box>
+
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Weekly report sending is temporarily unavailable in this deployment. Your saved notification history is still available below.
+      </Alert>
 
       <Grid container spacing={2.5} mb={3}>
         <Grid item xs={12} sm={6} md={3}>
@@ -204,17 +171,6 @@ const Notifications = () => {
                           {new Date(notification.createdAt).toLocaleString()}
                         </Typography>
                       </Box>
-                      {notification.status === 'failed' && (
-                        <Tooltip title="Resend">
-                          <IconButton
-                            size="small"
-                            onClick={() => resendNotification(notification._id)}
-                            sx={{ color: mode === 'light' ? '#007AFF' : '#0A84FF' }}
-                          >
-                            <Refresh />
-                          </IconButton>
-                        </Tooltip>
-                      )}
                     </Box>
                   </CardContent>
                 </Card>
