@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const isLocalDevelopment =
+  typeof window !== 'undefined' &&
+  ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  (isLocalDevelopment ? 'http://localhost:5000/api' : '/api');
 
 console.log('API URL:', API_URL);
 
@@ -40,6 +46,9 @@ api.interceptors.response.use(
     }
 
     const message =
+      (error.message === 'Network Error'
+        ? 'Network error: backend unreachable or blocked by CORS. Please try again shortly.'
+        : null) ||
       error.response?.data?.error ||
       error.response?.data?.message ||
       error.message ||
